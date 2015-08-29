@@ -1,9 +1,10 @@
 #! /usr/bin/env python
 import psutil
 import json
+from datetime import datetime
 
 
-def stats():
+def system_stats():
 	data = {}
 
 	data['cpus'] = []
@@ -44,18 +45,19 @@ def stats():
 	processes = []
 	for proc in psutil.process_iter():
 		try:
-			pinfo = proc.as_dict(attrs=['pid', 'name', 'memory_percent', 'cpu_percent'])
+			pinfo = proc.as_dict(attrs=['pid', 'name', 'memory_percent', 'cpu_percent', 'create_time'])
 		except psutil.NoSuchProcess:
 			pass
 		else:
 			processes.append(pinfo)
 
 	data['processes'] = processes
-	return json.dumps(data)
+	data['timestamp'] = datetime.now()
+	return data
 
 
 def main():
-	print(stats())
+	print system_stats() #(json.dumps(system_stats()))
 
 
 if __name__ == '__main__':
