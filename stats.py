@@ -36,12 +36,35 @@ def system_stats():
 	'sin': swap_mem.sin,
 	'sout': swap_mem.sout}
 
-	# disk_partitions = psutil.disk_partitions()
-	# print(disk_partitions)
-	# for partition in psutil.disk_partitions():
-	# 	usage = psutil.disk_usage(partition.mountpoint)
-	# print(psutil.disk_io_counters(perdisk=True))
+	disk_io = psutil.disk_io_counters(perdisk=True)
+
+	disk_data = {}
+	for disk in disk_io:
+		disk_data[disk] = {}
+		disk_data[disk]['read_count'] = disk_io[disk].read_count
+		disk_data[disk]['write_count'] = disk_io[disk].write_count
+		disk_data[disk]['read_bytes'] = disk_io[disk].read_bytes
+		disk_data[disk]['write_bytes'] = disk_io[disk].write_bytes
+		disk_data[disk]['read_time'] = disk_io[disk].read_time
+		disk_data[disk]['write_time'] = disk_io[disk].write_time
+
+	data['disk'] = disk_data
+
+	net_io = psutil.net_io_counters(pernic=True)
+	net_data = {}
+	for net in net_io:
+		net_data[net] = {}
+		net_data[net]['bytes_sent'] = net_io[net].bytes_sent
+		net_data[net]['bytes_recv'] = net_io[net].bytes_recv
+		net_data[net]['packets_sent'] = net_io[net].packets_sent
+		net_data[net]['packets_recv'] = net_io[net].packets_recv
+		net_data[net]['errin'] = net_io[net].errin
+		net_data[net]['errout'] = net_io[net].errout
+		net_data[net]['dropin'] = net_io[net].dropin
+		net_data[net]['dropout'] = net_io[net].dropout
 	
+	data['network'] = net_data
+
 	processes = []
 	for proc in psutil.process_iter():
 		try:
@@ -57,7 +80,7 @@ def system_stats():
 
 
 def main():
-	print system_stats() #(json.dumps(system_stats()))
+	print system_stats()['network'] # 
 
 
 if __name__ == '__main__':
